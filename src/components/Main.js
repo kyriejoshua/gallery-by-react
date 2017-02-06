@@ -46,8 +46,8 @@ const ImgFigure = React.createClass({
       styleObj = this.props.arrange.pos;
     }
     if (this.props.arrange.rotate) {
-      (['-moz-', '-ms-', '-webkit-', '']).forEach(function(value) {
-        styleObj[`${value}transform`] = `rotate(${this.props.arrange.rotate}deg)`;
+      (['Moz', 'ms', 'Webkit', '']).forEach(function(value) {
+        styleObj[`${value}Transform`] = `rotate(${this.props.arrange.rotate}deg)`;
       }.bind(this));
     }
     return (
