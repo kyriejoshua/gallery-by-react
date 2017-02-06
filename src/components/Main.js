@@ -31,11 +31,24 @@ function getRandom(low, high) {
   return Math.ceil(Math.random() * (high - low) + low);
 }
 
+/**
+ * [getDegRandom 获取正向或反向旋转30度以内的随机角度]
+ * @return {[type]} [description]
+ */
+function getDegRandom() {
+  return (Math.random() > 0.5 ? '' : '-' ) + Math.ceil(Math.random() * 30);
+}
+
 const ImgFigure = React.createClass({
   render() {
     let styleObj = {};
     if (this.props.arrange.pos) {
       styleObj = this.props.arrange.pos;
+    }
+    if (this.props.arrange.rotate) {
+      (['-moz-', '-ms-', '-webkit-', '']).forEach(function(value) {
+        styleObj[`${value}transform`] = `rotate(${this.props.arrange.rotate}deg)`;
+      }.bind(this));
     }
     return (
       <figure className="img-figure" style={styleObj}>
@@ -94,8 +107,9 @@ const AppComponent = React.createClass({
         topImgSpliceIndex = 0,
         imgsCenterArr = imgsArr.splice(centerIndex, 1);
 
-        // 居中图片
+        // 居中图片 无需旋转
         imgsCenterArr[0].pos = centerPos;
+        imgsCenterArr[0].rotate = 0;
 
         // 获取中央上侧的图片状态信息
         topImgSpliceIndex = Math.ceil(Math.random() * (imgsArr.length - topImgNum));
@@ -103,9 +117,12 @@ const AppComponent = React.createClass({
 
         // 布局图片
         imgsTopArr.forEach(function(value, index) {
-          imgsTopArr[index].pos = {
-            top: getRandom(vPosRangeTopY[0], vPosRangeTopY[1]),
-            left: getRandom(vPosRangeX[0], vPosRangeX[1])
+          imgsTopArr[index] = {
+            pos: {
+              top: getRandom(vPosRangeTopY[0], vPosRangeTopY[1]),
+              left: getRandom(vPosRangeX[0], vPosRangeX[1])
+            },
+            rotate: getDegRandom()
           }
         });
 
@@ -118,9 +135,12 @@ const AppComponent = React.createClass({
           } else {
             hPosRangeLORX = hPosRangeRightSecX;
           }
-          imgsArr[i].pos = {
-            top: getRandom(hPosRangeY[0], hPosRangeY[1]),
-            left: getRandom(hPosRangeLORX[0], hPosRangeLORX[1])
+          imgsArr[i] = {
+            pos: {
+              top: getRandom(hPosRangeY[0], hPosRangeY[1]),
+              left: getRandom(hPosRangeLORX[0], hPosRangeLORX[1])
+            },
+            rotate: getDegRandom()
           }
         }
         if (imgsTopArr && imgsTopArr[0]) {
@@ -139,7 +159,8 @@ const AppComponent = React.createClass({
           // pos: {
           //   left: '0',
           //   top: '0'
-          // }
+          // },
+          // rotate: 0
         }
       ]
     };
@@ -197,7 +218,8 @@ const AppComponent = React.createClass({
           pos: {
             left: 0,
             top: 0
-          }
+          },
+          rotate: 0
         }
       }
       imgFigures.push(<ImgFigure key={index} data={value} ref={`imgFigure${index}`} arrange={this.state.imgsArr[index]}/>);
