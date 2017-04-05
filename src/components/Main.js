@@ -42,7 +42,7 @@ function getDegRandom() {
 const ImgFigure = React.createClass({
 
   /**
-   * [handleClick ]
+   * [handleClick 图片点击事件]
    * @param {Object} e
    */
   handleClick(e) {
@@ -61,8 +61,8 @@ const ImgFigure = React.createClass({
       styleObj = this.props.arrange.pos;
     }
     if (this.props.arrange.rotate) {
-      (['Moz', 'ms', 'Webkit', '']).forEach(function(value) {
-        styleObj[`${value}Transform`] = `rotate(${this.props.arrange.rotate}deg)`;
+      (['MozT', 'MsT', 'WebkitT', 'OT', 't']).forEach(function(value) {
+        styleObj[`${value}ransform`] = `rotate(${this.props.arrange.rotate}deg)`;
       }.bind(this));
     }
 
@@ -70,11 +70,11 @@ const ImgFigure = React.createClass({
       styleObj.zIndex = 11;
     }
 
-    let imgFigureClassName = 'img-figure';
-    imgFigureClassName += this.props.arrange.isInverse ? ' is-inverse' : '';
+    let classNames = 'img-figure';
+    classNames += this.props.arrange.isInverse ? ' is-inverse' : '';
 
     return (
-      <figure className={imgFigureClassName} style={styleObj} onClick={this.handleClick}>
+      <figure className={classNames} style={styleObj} onClick={this.handleClick}>
         <img src={this.props.data.imageURL}
              alt={this.props.data.title}
         />
@@ -90,6 +90,31 @@ const ImgFigure = React.createClass({
     )
   }
 })
+
+// 控制按钮
+const ControllerUnit = React.createClass({
+  handleClick(e) {
+
+    if (this.props.arrange.isCenter) {
+      this.props.inverse();
+    } else {
+      this.props.center();
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  },
+
+  render() {
+    let classNames = 'controller-unit';
+    classNames += this.props.arrange.isCenter ? ' is-center' : '';
+    classNames += this.props.arrange.isInverse ? ' is-inverse' : '';
+
+    return (
+      <span className={classNames} onClick={this.handleClick}>
+      </span>
+    );
+  }
+});
 
 const AppComponent = React.createClass({
 // class AppComponent extends React.Component {
@@ -146,7 +171,7 @@ const AppComponent = React.createClass({
         vPosRangeX = vPosRange.x,
 
         imgsTopArr = [],
-        topImgNum = Math.floor(Math.random() * 2), // 取 0 或 1 个图片放置在舞台中央正上方
+        topImgNum = Math.floor(Math.random() * 2), // 取 0 或 1 个图片放置在舞台中央正上方, floor 向下取整
         topImgSpliceIndex = 0,
         imgsCenterArr = imgsArr.splice(centerIndex, 1);
 
@@ -265,7 +290,7 @@ const AppComponent = React.createClass({
   },
 
   render() {
-    let constrollerUnits = [],
+    let controllerUnits = [],
         imgFigures = [];
 
     imageDatas.forEach(function(value, index) {
@@ -281,6 +306,7 @@ const AppComponent = React.createClass({
         }
       }
       imgFigures.push(<ImgFigure key={index} data={value} ref={`imgFigure${index}`} arrange={this.state.imgsArr[index]} inverse={this.setInverse(index)} center={this.setCenter(index)} />);
+      controllerUnits.push(<ControllerUnit key={index} arrange={this.state.imgsArr[index]} inverse={this.setInverse(index)} center={this.setCenter(index)} />)
     }.bind(this));
 
     return (
@@ -289,7 +315,7 @@ const AppComponent = React.createClass({
           {imgFigures}
         </section>
         <nav className="nav-controller">
-          {constrollerUnits}
+          {controllerUnits}
         </nav>
       </section>
       // <div className="index">

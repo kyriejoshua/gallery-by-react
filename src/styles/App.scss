@@ -22,6 +22,16 @@ body {
 }
 */
 
+// online
+@font-face {
+  font-family: 'iconfont';  /* project id 270381 */
+  src: url('//at.alicdn.com/t/font_27vcp3m08fmq85mi.eot');
+  src: url('//at.alicdn.com/t/font_27vcp3m08fmq85mi.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_27vcp3m08fmq85mi.woff') format('woff'),
+  url('//at.alicdn.com/t/font_27vcp3m08fmq85mi.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_27vcp3m08fmq85mi.svg#iconfont') format('svg');
+}
+
 html,
 body {
   width: 100%;
@@ -38,7 +48,7 @@ body {
 .stage {
   position: relative;
   width: 100%;
-  height: 680px;
+  height: 100%;
 }
 /* image */
 .sec-img {
@@ -118,4 +128,41 @@ body {
   z-index: 101;
   width: 100%;
   text-align: center;
+
+  @at-root {
+    .controller-unit {
+      display: inline-block;
+      margin: 0 5px;
+      width: 30px;
+      height: 30px;
+      transform: scale(.5);
+      background-color: #ACB3BF;
+      border-radius: 50%;
+      text-align: center;
+      vertical-align: middle;
+      cursor: pointer;
+
+      transition: transform .6s ease-in-out, background-color .3s;
+
+      &.is-center {
+        line-height: 30px;
+        transform: scale(1);
+        background-color: #828B99;
+        &::after {
+          color: white;
+          font-family: "iconfont";
+          content: "\e6ad"; // unicode 不是代码
+          font-size: 100%;
+          -webkit-font-smoothing: antialiased; // 各浏览器消除锯齿的方式
+          -moz-osx-font-smoothing: grayscale;
+          -webkit-text-stroke-width: 0.8px;
+        }
+        &.is-inverse {
+          background-color: #777;
+          transform: rotateY(180deg);
+        }
+      }
+
+    }
+  }
 }
