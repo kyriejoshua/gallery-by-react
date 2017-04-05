@@ -40,6 +40,21 @@ function getDegRandom() {
 }
 
 const ImgFigure = React.createClass({
+
+  /**
+   * [handleClick ]
+   * @param {Object} e
+   */
+  handleClick(e) {
+    if (this.props.arrange.isCenter) {
+      this.props.inverse();
+    } else {
+      this.props.center();
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  },
+
   render() {
     let styleObj = {};
     if (this.props.arrange.pos) {
@@ -50,13 +65,26 @@ const ImgFigure = React.createClass({
         styleObj[`${value}Transform`] = `rotate(${this.props.arrange.rotate}deg)`;
       }.bind(this));
     }
+
+    if (this.props.arrange.isCenter) {
+      styleObj.zIndex = 11;
+    }
+
+    let imgFigureClassName = 'img-figure';
+    imgFigureClassName += this.props.arrange.isInverse ? ' is-inverse' : '';
+
     return (
-      <figure className="img-figure" style={styleObj}>
+      <figure className={imgFigureClassName} style={styleObj} onClick={this.handleClick}>
         <img src={this.props.data.imageURL}
              alt={this.props.data.title}
         />
         <figcaption>
-          <h2 className="img-title">{this.props.data.desc}</h2>
+          <h2 className="img-title">{this.props.data.title}</h2>
+          <div className="img-back" onClick={this.handleClick}>
+            <p>
+              {this.props.data.desc}
+            </p>
+          </div>
         </figcaption>
       </figure>
     )
@@ -86,6 +114,21 @@ const AppComponent = React.createClass({
   },
 
   /**
+   * [setInverse 将图片翻转]
+   * @param {Number} index
+   * @returns
+   */
+  setInverse(index) {
+    return () => {
+      let imgsArr = this.state.imgsArr;
+      imgsArr[index].isInverse = !imgsArr[index].isInverse;
+      this.setState({
+        imgsArr: imgsArr
+      })
+    };
+  },
+
+  /**
    * [rearrange 重新布局所有图片]
    * @param  {Number} centerIndex [指定居中某张图片]
    * @return {[type]}             [description]
@@ -108,8 +151,11 @@ const AppComponent = React.createClass({
         imgsCenterArr = imgsArr.splice(centerIndex, 1);
 
         // 居中图片 无需旋转
-        imgsCenterArr[0].pos = centerPos;
-        imgsCenterArr[0].rotate = 0;
+        imgsCenterArr[0] = {
+          pos: centerPos,
+          rotate: 0,
+          isCenter: true
+        }
 
         // 获取中央上侧的图片状态信息
         topImgSpliceIndex = Math.ceil(Math.random() * (imgsArr.length - topImgNum));
@@ -122,7 +168,8 @@ const AppComponent = React.createClass({
               top: getRandom(vPosRangeTopY[0], vPosRangeTopY[1]),
               left: getRandom(vPosRangeX[0], vPosRangeX[1])
             },
-            rotate: getDegRandom()
+            rotate: getDegRandom(),
+            isCenter: false
           }
         });
 
@@ -140,7 +187,8 @@ const AppComponent = React.createClass({
               top: getRandom(hPosRangeY[0], hPosRangeY[1]),
               left: getRandom(hPosRangeLORX[0], hPosRangeLORX[1])
             },
-            rotate: getDegRandom()
+            rotate: getDegRandom(),
+            isCenter: false
           }
         }
         if (imgsTopArr && imgsTopArr[0]) {
@@ -152,6 +200,12 @@ const AppComponent = React.createClass({
         })
   },
 
+  setCenter(index) {
+    return () => {
+      this.rearrange(index);
+    };
+  },
+
   getInitialState() {
     return {
       imgsArr: [
@@ -160,7 +214,9 @@ const AppComponent = React.createClass({
           //   left: '0',
           //   top: '0'
           // },
-          // rotate: 0
+          // rotate: 0,
+          // isInverse: false,
+          // isCenter: false
         }
       ]
     };
@@ -219,10 +275,12 @@ const AppComponent = React.createClass({
             left: 0,
             top: 0
           },
-          rotate: 0
+          rotate: 0,
+          isInverse: false,
+          isCenter: false
         }
       }
-      imgFigures.push(<ImgFigure key={index} data={value} ref={`imgFigure${index}`} arrange={this.state.imgsArr[index]}/>);
+      imgFigures.push(<ImgFigure key={index} data={value} ref={`imgFigure${index}`} arrange={this.state.imgsArr[index]} inverse={this.setInverse(index)} center={this.setCenter(index)} />);
     }.bind(this));
 
     return (
